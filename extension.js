@@ -13,7 +13,13 @@
 
 const Clutter = imports.gi.Clutter;
 const St = imports.gi.St;
+const Gio = imports.gi.Gio;
+const Meta = imports.gi.Meta;
+const Shell = imports.gi.Shell;
 const Main = imports.ui.main;
+
+const SETTINGS_SCHEMA_ID = 'org.gnome.shell.extensions.desaturate-all.keybindings';
+const TOGGLE_KEY_NAME = 'toggle';
 
 let button;
 let extension_icon;
@@ -49,8 +55,16 @@ function init() {
 
 function enable() {
     Main.panel._rightBox.insert_child_at_index(button, 0);
+
+    Main.wm.addKeybinding(TOGGLE_KEY_NAME,
+        new Gio.Settings({schema: SETTINGS_SCHEMA_ID}),
+        Meta.KeyBindingFlags.NONE,
+        Shell.ActionMode.ALL,
+        _toggleEffect);
 }
 
 function disable() {
     Main.panel._rightBox.remove_child(button);
+
+    Main.wm.removeKeybinding(TOGGLE_KEY_NAME);
 }
