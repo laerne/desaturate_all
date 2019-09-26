@@ -1,18 +1,24 @@
 Installation
 ============
 
-Using a terminal, you can do the following sequence of commands :
+Using a terminal, you can do the following sequence of commands:
 
 ```
 $ git clone https://github.com/laerne/desaturate_all.git
 $ mv desaturate_all "~/.local/share/gnome-shell/extensions/desaturate_all@nicolas.brack.mail.be"
-$ mkdir -p ~/.local/share/glib-2.0/schemas
-$ ln -sr ~/.local/share/gnome-shell/extensions/desaturate_all@nicolas.brack.mail.be/schemas/* ~/.local/share/glib-2.0/schemas
-$ glib-compile-schemas ~/.local/share/glib-2.0/schemas
 ```
 
-Then log out and log back into GNOME. (Instead, you might be able to just press
-`Alt`+`F2`, type `r`, then press `Enter`.)
+Then press `Alt`+`F2`, type `r` in the dialog window, then press `Enter`.
+
+The default keyboard shortcut to toggle desaturation is `<Super>`+`e`. You can
+change this shortcut key using `gsettings`. For example, to change the keyboard
+shortcut to `<Ctrl>`+`e`, run the following command:
+
+```
+gsettings --schemadir \
+  ~/.local/share/gnome-shell/extensions/desaturate_all@nicolas.brack.mail.be/schemas \
+  set org.gnome.shell.extensions.desaturate-all.keybindings toggle "['<Ctrl>E']"
+```
 
 You can now enable the extension by running `gnome-shell-extension-prefs`, or by
 browsing to https://extensions.gnome.org/local.

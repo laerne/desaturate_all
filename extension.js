@@ -11,19 +11,48 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+'use strict';
+
 const Clutter = imports.gi.Clutter;
 const St = imports.gi.St;
 const Gio = imports.gi.Gio;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
 const Main = imports.ui.main;
-
-const SETTINGS_SCHEMA_ID = 'org.gnome.shell.extensions.desaturate-all.keybindings';
-const TOGGLE_KEY_NAME = 'toggle';
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
 
 let button;
 let extension_icon;
 let color_effect;
+
+const Keybindings = {
+    SchemaId: 'org.gnome.shell.extensions.desaturate-all.keybindings',
+    Keys: {TOGGLE: 'toggle'},
+    enable: () => {
+        // Get GSchema source to fetch settings.
+        const gschema = Gio.SettingsSchemaSource.new_from_directory(
+            Me.dir.get_child('schemas').get_path(),
+            Gio.SettingsSchemaSource.get_default(),
+            false
+        );
+
+        const settings = new Gio.Settings({
+            settings_schema: gschema.lookup(Keybindings.SchemaId, true)
+        });
+
+        Main.wm.addKeybinding(
+            Keybindings.Keys.TOGGLE,
+            settings,
+            Meta.KeyBindingFlags.NONE,
+            Shell.ActionMode.ALL,
+            _toggleEffect
+        );
+    },
+    disable: () => {
+        Main.wm.removeKeybinding(Keybindings.Keys.TOGGLE);
+    }
+};
 
 function _toggleEffect() {
     if ( Main.uiGroup.has_effects( color_effect ) ) {
@@ -55,16 +84,10 @@ function init() {
 
 function enable() {
     Main.panel._rightBox.insert_child_at_index(button, 0);
-
-    Main.wm.addKeybinding(TOGGLE_KEY_NAME,
-        new Gio.Settings({schema: SETTINGS_SCHEMA_ID}),
-        Meta.KeyBindingFlags.NONE,
-        Shell.ActionMode.ALL,
-        _toggleEffect);
+    Keybindings.enable();
 }
 
 function disable() {
     Main.panel._rightBox.remove_child(button);
-
-    Main.wm.removeKeybinding(TOGGLE_KEY_NAME);
+    Keybindings.disable();
 }
