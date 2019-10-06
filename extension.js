@@ -15,12 +15,10 @@
 
 const Clutter = imports.gi.Clutter;
 const St = imports.gi.St;
-const Gio = imports.gi.Gio;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
 
 let button;
 let extension_icon;
@@ -30,16 +28,7 @@ const Keybindings = {
     SchemaId: 'org.gnome.shell.extensions.desaturate-all.keybindings',
     Keys: {TOGGLE: 'toggle'},
     enable: () => {
-        // Get GSchema source to fetch settings.
-        const gschema = Gio.SettingsSchemaSource.new_from_directory(
-            Me.dir.get_child('schemas').get_path(),
-            Gio.SettingsSchemaSource.get_default(),
-            false
-        );
-
-        const settings = new Gio.Settings({
-            settings_schema: gschema.lookup(Keybindings.SchemaId, true)
-        });
+        const settings = ExtensionUtils.getSettings(Keybindings.SchemaId);
 
         Main.wm.addKeybinding(
             Keybindings.Keys.TOGGLE,
