@@ -11,13 +11,37 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+'use strict';
+
 const Clutter = imports.gi.Clutter;
 const St = imports.gi.St;
+const Meta = imports.gi.Meta;
+const Shell = imports.gi.Shell;
 const Main = imports.ui.main;
+const ExtensionUtils = imports.misc.extensionUtils;
 
 let button;
 let extension_icon;
 let color_effect;
+
+const Keybindings = {
+    SchemaId: 'org.gnome.shell.extensions.desaturate-all.keybindings',
+    Keys: {TOGGLE: 'toggle'},
+    enable: () => {
+        const settings = ExtensionUtils.getSettings(Keybindings.SchemaId);
+
+        Main.wm.addKeybinding(
+            Keybindings.Keys.TOGGLE,
+            settings,
+            Meta.KeyBindingFlags.NONE,
+            Shell.ActionMode.ALL,
+            _toggleEffect
+        );
+    },
+    disable: () => {
+        Main.wm.removeKeybinding(Keybindings.Keys.TOGGLE);
+    }
+};
 
 function _toggleEffect() {
     if ( Main.uiGroup.has_effects( color_effect ) ) {
@@ -49,8 +73,10 @@ function init() {
 
 function enable() {
     Main.panel._rightBox.insert_child_at_index(button, 0);
+    Keybindings.enable();
 }
 
 function disable() {
     Main.panel._rightBox.remove_child(button);
+    Keybindings.disable();
 }
