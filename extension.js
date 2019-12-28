@@ -43,14 +43,42 @@ const Keybindings = {
     }
 };
 
-function _toggleEffect() {
+async function _toggleEffect() {
+    const effectName = 'desaturate-all-effect';
+    const factorPropName = `@effects.${effectName}.factor`;
+
+    const transition = Clutter.PropertyTransition.new(factorPropName);
+    transition.progress_mode = Clutter.AnimationMode.LINEAR;
+    transition.duration = 1500;
+    transition.remove_on_complete = true;
+
+    // We can't set integer values -- 0 and 1 -- for the factor, because doing
+    // so seems to get converted to integer GObject Values.  Clutter is unable
+    // to interpolate between integer data types. Since there is no distinct
+    // floating point type versus integer type in JavaScript, it seems the only
+    // way to force a floating type is to set non-integer factor values here.
+    transition.set_from(0.0001);
+    transition.set_to(0.9999);
+
     if ( Main.uiGroup.has_effects( color_effect ) ) {
-        Main.uiGroup.remove_effect( color_effect );
+        transition.direction = Clutter.TimelineDirection.BACKWARD;
+        await animate(Main.uiGroup, transition);
+        color_effect.factor = 0;
+        Main.uiGroup.remove_effect(color_effect);
     } else {
-        Main.uiGroup.add_effect( color_effect );
+        Main.uiGroup.add_effect_with_name(effectName, color_effect);
+        await animate(Main.uiGroup, transition);
+        color_effect.factor = 1;
     }
 }
 
+async function animate(actor, transition) {
+    const transitionName = 'desaturate-all-effect-animation';
+    return new Promise((resolve) => {
+        transition.connect('stopped', resolve);
+        actor.add_transition(transitionName, transition);
+    });
+}
 
 function init() {
     //Creation of button
@@ -64,8 +92,9 @@ function init() {
                                    style_class: 'system-status-icon' });
     button.set_child(extension_icon);
 
-    //Creation of effect
-    color_effect = new Clutter.DesaturateEffect();
+    // Set the initial value of the desaturation/grayscale effect to 0; it will
+    // be animated to 1 later when the effect is enabled.
+    color_effect = Clutter.DesaturateEffect.new(0);
     
     //Signal connection
     button.connect('button-press-event', _toggleEffect);
