@@ -2,5 +2,5 @@
     "uuid": "desaturate_all@nicolas.brack.mail.be",
     "name": "Desaturate All",
     "description": "Desature the entire gnome workspace",
-    "shell-version": ["3.18.5"]
+    "shell-version": ["3.18.5", "3.38.1"]
 }
