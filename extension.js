@@ -57,8 +57,8 @@ function init() {
     button = new St.Bin({ style_class: 'panel-button',
                           reactive: true,
                           can_focus: true,
-                          x_fill: true,
-                          y_fill: false,
+                          x_expand: true,
+                          y_expand: false,
                           track_hover: true });
     extension_icon = new St.Icon({ icon_name: 'applications-graphics-symbolic',
                                    style_class: 'system-status-icon' });
