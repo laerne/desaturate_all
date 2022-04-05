@@ -22,3 +22,10 @@ gsettings --schemadir \
 
 You can now enable the extension by running `gnome-shell-extension-prefs`, or by
 browsing to https://extensions.gnome.org/local.
+
+**Running with Ubutun20:** Before you can execute the commands above, you have to install a few programms. 
+```
+$ sudo apt-get install gnome-tweaks gnome-shell-extensions
+
+After installing this programs, you can seach for *"Addons"* and activate the Option *"desaturate_all"*. 
+Finally you have got a icon with a picutre in your gnome-shell. 
